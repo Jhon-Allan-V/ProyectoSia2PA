@@ -139,12 +139,12 @@ public class Lluvia
 		  
 			if(rainDropsType.get(i)==1) // gota dañina
 			{
-				batch.draw( gotaMala, raindrop.x, raindrop.y, raindrop.width, raindrop.height);
+            	batch.draw(gotaMala, raindrop.x, raindrop.y, raindrop.width, raindrop.height);
 			}
 		  
 			else
 			{
-				batch.draw( gotaMala, raindrop.x, raindrop.y, raindrop.width, raindrop.height);
+            	batch.draw(gotaBuena, raindrop.x, raindrop.y, raindrop.width, raindrop.height);
 			}
 	    }
    }
