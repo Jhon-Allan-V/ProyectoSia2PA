@@ -1,172 +1,157 @@
 package puppy.code;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 
 public class Lluvia 
 {
-	private Array<Rectangle> rainDropsPos;
-	
-	private Array<Integer> rainDropsType;
+	// Array que almacena los objetos que caen
+	private Array<ObjetoCaida> objetos; 
    
 	private long lastDropTime;
     
-	private Texture gotaBuena;
-    private Texture gotaMala;
+	// Textura de los nuevos objetos
+	private Texture texturaEmpanada;
+    private Texture texturaAnticucho;
+    private Texture texturaTerremoto;
     
 	private Sound dropSound;
     private Music rainMusic;
 	   
-	public Lluvia(Texture gotaBuena, Texture gotaMala, Sound ss, Music mm) {
+	public Lluvia(Texture texturaEmpanada, Texture texturaAnticucho, Texture texturaTerremoto, Sound ss, Music mm) 
+	{
+		this.texturaEmpanada = texturaEmpanada;
+		this.texturaAnticucho = texturaAnticucho;
+		this.texturaTerremoto = texturaTerremoto;
+
 		rainMusic = mm;
 		dropSound = ss;
-		this.gotaBuena = gotaBuena;
-		this.gotaMala = gotaMala;
 	}
 	
 	public void crear() 
 	{
-		
-		rainDropsPos = new Array<Rectangle>();
-		rainDropsType = new Array<Integer>();
-		
-		crearGotaDeLluvia();
+		objetos = new Array<ObjetoCaida>();
 	     
-		// start the playback of the background music immediately
+		crearObjeto();
+
 	    rainMusic.setLooping(true);
 	    rainMusic.play();
 	}
 	
-	private void crearGotaDeLluvia() 
+	private void crearObjeto() 
 	{
-	      
-		Rectangle raindrop = new Rectangle();
-	      
-		raindrop.x = MathUtils.random(0, 800-64);
-	    raindrop.y = 480;
-	    raindrop.width = 64;
-	    raindrop.height = 64;
-	      
-		rainDropsPos.add(raindrop);
-	    // ver el tipo de gota
-	    if (MathUtils.random(1,10)<5)
-			{
-				rainDropsType.add(1);
-			}	    	  
-	    else 
-		{
-			rainDropsType.add(2);
-		}
-	    
-		lastDropTime = TimeUtils.nanoTime();
+		float x = MathUtils.random(0, 800 - 64);
+		float y = 480;
+		float velocidad = 300;
+
+		int tipo = MathUtils.random(1, 3);
+
+		ObjetoCaida objeto;
+
+		if (tipo == 1)
+        {
+            objeto = new Empanada(x, y, texturaEmpanada, velocidad);
+        }
+        else if (tipo == 2)
+        {
+            objeto = new Anticucho(x, y, texturaAnticucho, velocidad);
+        }
+        else
+        {
+            objeto = new Terremoto(x, y, texturaTerremoto, velocidad);
+        }
+
+        objetos.add(objeto);
+
+        lastDropTime = TimeUtils.nanoTime();
 	}
 	
-   public boolean actualizarMovimiento(Tarro tarro) 
-   { 
+    public boolean actualizarMovimiento(Tarro tarro) 
+    { 
 	   // generar gotas de lluvia 
 	   if(TimeUtils.nanoTime() - lastDropTime > 100000000)
-	    {
-			crearGotaDeLluvia();
-		} 
-	  
-	   
-	   // Cambio de for para evitar el salto de gotas 
-	   for (int i= rainDropsPos.size - 1; i >= 0; i--) 
-		{
-			Rectangle raindrop = rainDropsPos.get(i);
-	      	
-			raindrop.y -= 300 * Gdx.graphics.getDeltaTime();
-	      	//cae al suelo y se elimina
-	      	
-			if(raindrop.y + raindrop.height < 0) 
-			{
-	    	 	rainDropsPos.removeIndex(i); 
-	    	  	rainDropsType.removeIndex(i);
+	   {
+			crearObjeto();
+	   } 
 
-				continue;
-			}
-	      
-			if(raindrop.overlaps(tarro.getArea())) 
-			{ 
-					//la gota choca con el tarro
-					if(rainDropsType.get(i)==1) 
-					{ 
-						// gota dañina
-	    				tarro.dañar();
+	   for(int i = objetos.size - 1; i >= 0; i--)
+	   {
+			ObjetoCaida objeto = objetos.get(i);
 
-						rainDropsPos.removeIndex(i);
-                		rainDropsType.removeIndex(i);
-	    	  
-						if (tarro.getVidas()<=0)	
-						{
-							return false; // si se queda sin vidas retorna falso /game over
-						}	
-	      			}
-			
-					else 
-					{ 
-						// gota a recolectar
-	    	  
-						tarro.sumarPuntos(10);
-	          
-						dropSound.play();
-	          
-						rainDropsPos.removeIndex(i);
-	          
-						rainDropsType.removeIndex(i);
-	      			}
-	      
-			}
-	   
-		}
-			
-		return true; 
-   }  
-   
-   public void actualizarDibujoLluvia(SpriteBatch batch) 
-   {
-	    for (int i=0; i < rainDropsPos.size; i++ ) 
-		{
-		  
-			Rectangle raindrop = rainDropsPos.get(i);
-		  
-			if(rainDropsType.get(i)==1) // gota dañina
-			{
-            	batch.draw(gotaMala, raindrop.x, raindrop.y, raindrop.width, raindrop.height);
-			}
-		  
-			else
-			{
-            	batch.draw(gotaBuena, raindrop.x, raindrop.y, raindrop.width, raindrop.height);
-			}
-	    }
-   }
-   
-   public void destruir() 
-   {
-      dropSound.dispose();
-      rainMusic.dispose();
+			// Movimiento vertical
+			objeto.actualiza();
 
-	  // Liberar las texturas administradas por LLuvia
-	  gotaBuena.dispose();
-      gotaMala.dispose();
-   }
+			// Eliminar si este salio de la pantalla
+
+			if (objeto.estaFueraPantalla())
+			{
+				objetos.removeIndex(i);
+				continue; 
+			}
+
+			// Colision de jugador validacion
+
+			if(objeto.colisiona(tarro.getArea()))
+			{
+				/* 
+				
+				Tiene polimorfismo ya que cada clase
+				tiene su propio efecto sobre el jugador
+				
+				*/
+				
+				objeto.aplicarEfecto(tarro);
+
+				// Los objetos recolectables
+				// reproducen un sonido
+				if(objeto instanceof Recolectable)
+				{
+					dropSound.play();
+				}
+
+				objetos.removeIndex(i);
+
+				if(tarro.getVidas() <= 0)
+				{
+					return false; 
+				}
+			}
+	   }
+
+	   return true; 
+	    
+    }  
    
-   public void pausar() 
-   {
-	  rainMusic.stop();
-   }
+	public void actualizarDibujoLluvia(SpriteBatch batch) 
+    {
+		for (ObjetoCaida objeto : objetos)
+        {
+            objeto.dibujar(batch);
+        }
+    }
    
-   public void continuar() 
-   {
-	  rainMusic.play();
-   }
-   
+    public void destruir()
+    {
+        dropSound.dispose();
+        rainMusic.dispose();
+
+        texturaEmpanada.dispose();
+        texturaAnticucho.dispose();
+        texturaTerremoto.dispose();
+    }
+
+    public void pausar()
+    {
+        rainMusic.stop();
+    }
+
+    public void continuar()
+    {
+        rainMusic.play();
+    }
 }
