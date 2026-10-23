@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="GameLluviaMenu2024/core/src/main/java"/>
+	<classpathentry kind="src" path="GameLluviaMenu2024/lwjgl3/src/main/java"/>
+	<classpathentry kind="lib" path="GameLluviaMenu2024/core/build/libs/core-$projectVersion.jar"/>
+	<classpathentry kind="lib" path="GameLluviaMenu2024/gradle/wrapper/gradle-wrapper.jar"/>
+	<classpathentry kind="output" path="GameLluviaMenu2024/core/bin/main"/>
+</classpath>

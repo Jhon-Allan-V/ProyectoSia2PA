@@ -41,7 +41,6 @@ public class GameScreen implements Screen {
 	      // camera
 	      camera = new OrthographicCamera();
 	      camera.setToOrtho(false, 800, 480);
-	      batch = new SpriteBatch();
 	      // creacion del tarro
 	      tarro.crear();
 	      
