@@ -31,7 +31,7 @@ public class GameScreen implements Screen
 
         Sound hurtSound = Gdx.audio.newSound(Gdx.files.internal("hurt.ogg"));
 
-        tarro = new Tarro(new Texture(Gdx.files.internal("jugador_quieto.png")), hurtSound);
+        tarro = new Jugador(new Texture(Gdx.files.internal("jugador_quieto.png")), hurtSound);
 
         Texture empanada = new Texture(Gdx.files.internal("Empanada.png"));
 
