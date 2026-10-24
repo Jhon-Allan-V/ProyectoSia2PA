@@ -12,85 +12,92 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 public class GameScreen implements Screen
 {
-	final GameLluviaMenu game; 
+    final GameLluviaMenu game;
 
-	private OrthographicCamera camera;
-	private SpriteBatch batch; 
-	private BitmapFont font;
+    private OrthographicCamera camera;
+    private SpriteBatch batch;
+    private BitmapFont font;
 
-	private Tarro tarro;
-	private Lluvia lluvia;
+    private Tarro tarro;
+    private Lluvia lluvia;
+    private Texture fonda;
 
-	public GameScreen(final GameLluviaMenu game)
-	{
-		this.game = game; 
+    public GameScreen(final GameLluviaMenu game)
+    {
+        this.game = game;
 
-		this.batch = game.getBatch();
-		this.font = game.getFont();
+        this.batch = game.getBatch();
+        this.font = game.getFont();
 
-		Sound hurtSound = Gdx.audio.newSound(Gdx.files.internal("hurt.ogg"));
+        Sound hurtSound = Gdx.audio.newSound(Gdx.files.internal("hurt.ogg"));
 
-		tarro = new Tarro(new Texture(Gdx.files.internal("bucket.png")), hurtSound);
+        tarro = new Tarro(new Texture(Gdx.files.internal("jugador_quieto.png")), hurtSound);
 
-		Texture empanada = new Texture(Gdx.files.internal("Empanada.png"));
+        Texture empanada = new Texture(Gdx.files.internal("Empanada.png"));
 
-		Texture anticucho = new Texture(Gdx.files.internal("Anticucho.png"));
-	
-		Texture terremoto = new Texture(Gdx.files.internal("Terremoto.png"));
+        Texture anticucho = new Texture(Gdx.files.internal("Anticucho.png"));
 
-		empanada.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+        Texture terremoto = new Texture(Gdx.files.internal("Terremoto.png"));
 
-		anticucho.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+        // NUEVO: cargar el fondo en el atributo de la clase
+        fonda = new Texture(Gdx.files.internal("Fonda.png"));
 
-    	terremoto.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+        empanada.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
-		Sound dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
+        anticucho.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+
+        terremoto.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+
+        Sound dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
 
         Music rainMusic = Gdx.audio.newMusic(Gdx.files.internal("rain.mp3"));
 
-		lluvia = new Lluvia(empanada, anticucho, terremoto, dropSound, rainMusic);
+        lluvia = new Lluvia(empanada, anticucho, terremoto, dropSound, rainMusic);
 
-		camera = new OrthographicCamera();
+        camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
 
-		tarro.crear();
+        tarro.crear();
         lluvia.crear();
-	}
+    }
 
-	@Override
-	public void render(float delta)
-	{
-		ScreenUtils.clear(0, 0, 0.2f, 1);
+    @Override
+    public void render(float delta)
+    {
+        ScreenUtils.clear(0, 0, 0.2f, 1);
 
-		camera.update();
+        camera.update();
 
-		batch.setProjectionMatrix(camera.combined);
+        batch.setProjectionMatrix(camera.combined);
 
-		if(!tarro.estaHerido())
-		{
-			tarro.actualizarMovimiento();
+        if(!tarro.estaHerido())
+        {
+            tarro.actualizarMovimiento();
 
-			boolean sigueJugando = lluvia.actualizarMovimiento(tarro);
+            boolean sigueJugando = lluvia.actualizarMovimiento(tarro);
 
-			if(!sigueJugando)
-			{
-				if(game.getHigherScore() < tarro.getPuntos())
-				{
-					game.setHigherScore(tarro.getPuntos());
-				}
+            if(!sigueJugando)
+            {
+                if(game.getHigherScore() < tarro.getPuntos())
+                {
+                    game.setHigherScore(tarro.getPuntos());
+                }
 
-				game.setScreen(new GameOverScreen(game));
+                game.setScreen(new GameOverScreen(game));
 
-				dispose();
+                dispose();
 
-				return;
-			}
-		}
+                return;
+            }
+        }
 
-		batch.begin();
+        batch.begin();
 
-		// Puntaje del usuario
-		font.draw(batch, "Puntos: " + tarro.getPuntos(), 5, 475);
+        // NUEVO: dibujar el fondo antes de los demás elementos
+        batch.draw(fonda, 0, 0, 800, 480);
+
+        // Puntaje del usuario
+        font.draw(batch, "Puntos: " + tarro.getPuntos(), 5, 475);
 
         // Mostrar vidas restantes.
         font.draw(batch, " Vidas: " + tarro.getVidas(), 670, 475);
@@ -98,9 +105,9 @@ public class GameScreen implements Screen
         // Mostrar puntuacion maxima.
         font.draw(batch, "HighScore: " + game.getHigherScore(), camera.viewportWidth / 2 - 50, 475);
 
-		tarro.dibujar(batch);
+        tarro.dibujar(batch);
 
-		// Dibujar empanadas, anticuchos y terremotos.
+        // Dibujar empanadas, anticuchos y terremotos.
         lluvia.actualizarDibujoLluvia(batch);
 
         batch.end();
@@ -140,7 +147,8 @@ public class GameScreen implements Screen
     {
         tarro.destruir();
         lluvia.destruir();
+
+        // NUEVO: liberar la textura del fondo
+        fonda.dispose();
     }
 }
-
-	
