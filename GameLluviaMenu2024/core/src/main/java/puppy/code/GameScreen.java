@@ -48,11 +48,13 @@ public class GameScreen implements Screen
 
         terremoto.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
-        Sound dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
+        Sound comerSound = Gdx.audio.newSound(Gdx.files.internal("comer.wav"));
 
-        Music rainMusic = Gdx.audio.newMusic(Gdx.files.internal("rain.mp3"));
+		Sound beberSound = Gdx.audio.newSound(Gdx.files.internal("beber.wav"));
 
-        lluvia = new Lluvia(empanada, anticucho, terremoto, dropSound, rainMusic);
+        Music musica = Gdx.audio.newMusic(Gdx.files.internal("cueca_fondo.ogg"));
+
+        lluvia = new Lluvia(empanada, anticucho, terremoto, comerSound, beberSound, musica);
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);

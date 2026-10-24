@@ -20,17 +20,19 @@ public class Lluvia
     private Texture texturaAnticucho;
     private Texture texturaTerremoto;
     
-	private Sound dropSound;
-    private Music rainMusic;
+	private Sound comerSound;
+	private Sound beberSound;
+	private Music musica;
 	   
-	public Lluvia(Texture texturaEmpanada, Texture texturaAnticucho, Texture texturaTerremoto, Sound ss, Music mm) 
+	public Lluvia(Texture texturaEmpanada, Texture texturaAnticucho, Texture texturaTerremoto, Sound comerSound, Sound beberSound, Music mm) 
 	{
 		this.texturaEmpanada = texturaEmpanada;
 		this.texturaAnticucho = texturaAnticucho;
 		this.texturaTerremoto = texturaTerremoto;
 
-		rainMusic = mm;
-		dropSound = ss;
+		this.comerSound = comerSound;
+    	this.beberSound = beberSound;
+    	this.musica = mm;
 	}
 	
 	public void crear() 
@@ -39,8 +41,9 @@ public class Lluvia
 	     
 		crearObjeto();
 
-	    rainMusic.setLooping(true);
-	    rainMusic.play();
+	    musica.setLooping(true);
+		musica.setVolume(0.35f);
+		musica.play();
 	}
 	
 	private void crearObjeto() 
@@ -111,7 +114,11 @@ public class Lluvia
 				// reproducen un sonido
 				if(objeto instanceof Recolectable)
 				{
-					dropSound.play();
+					comerSound.play(0.7f);
+				}
+				else
+				{
+					beberSound.play(0.7f);
 				}
 
 				objetos.removeIndex(i);
@@ -137,8 +144,9 @@ public class Lluvia
    
     public void destruir()
     {
-        dropSound.dispose();
-        rainMusic.dispose();
+        comerSound.dispose();
+        beberSound.dispose();
+        musica.dispose();
 
         texturaEmpanada.dispose();
         texturaAnticucho.dispose();
@@ -147,11 +155,11 @@ public class Lluvia
 
     public void pausar()
     {
-        rainMusic.stop();
+        musica.stop();
     }
 
     public void continuar()
     {
-        rainMusic.play();
+        musica.play();
     }
 }
