@@ -1,5 +1,5 @@
 package puppy.code;
-
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
@@ -78,6 +78,14 @@ public class GameScreen implements Screen
     @Override
     public void render(float delta)
     {
+        // Detectar ESC para pausar el juego
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE))
+        {
+            lluvia.pausar();
+            game.setScreen(new PausaScreen(game, this));
+            return;
+        }
+
         ScreenUtils.clear(0, 0, 0.2f, 1);
 
         if(!tarro.estaHerido())
