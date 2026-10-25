@@ -1,5 +1,6 @@
 package puppy.code;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -33,11 +34,13 @@ public class PausaScreen implements Screen {
 		batch.setProjectionMatrix(camera.combined);
 
 		batch.begin();
-		font.draw(batch, "Juego en Pausa ", 100, 150);
-		font.draw(batch, "Toca en cualquier lado para continuar !!!", 100, 100);
+		font.draw(batch, "JUEGO EN PAUSA", 330, 260);
+		font.draw(batch, "Presiona ESC para continuar", 290, 220);
 		batch.end();
 
-		if (Gdx.input.isTouched()) {
+		// Reanudar con ESC
+		if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE))
+		{
 			game.setScreen(juego);
 			dispose();
 		}

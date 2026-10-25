@@ -1,5 +1,6 @@
 package puppy.code;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
@@ -114,7 +115,19 @@ public class Jugador extends Tarro
     {
         if(estaHerido())
         {
-            super.dibujar(batch);
+            caminando = false;
+            tiempoAnimacion = 0f;
+
+            Rectangle area = super.getArea();
+
+            batch.draw(
+                quieto,
+                area.x,
+                area.y + MathUtils.random(-5, 5),
+                ANCHO,
+                ALTO
+            );
+
             return;
         }
 
