@@ -1,6 +1,5 @@
 package puppy.code;
 
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
@@ -27,6 +26,7 @@ public class Jugador extends Tarro
     private Texture paso1; 
     private Texture paso2;
     private Texture paso3; 
+    private Texture texturaMareado;
 
     // Imagen de cuando el jugador esta quieto
     private TextureRegion quieto;
@@ -52,6 +52,10 @@ public class Jugador extends Tarro
         this.paso1 = paso1;
         this.paso2 = paso2;
         this.paso3 = paso3;
+        
+        texturaMareado = new Texture(Gdx.files.internal("jugador_mareado.png"));
+        texturaMareado.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+
 
         textura.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
@@ -113,20 +117,14 @@ public class Jugador extends Tarro
     @Override 
     public void dibujar(SpriteBatch batch)
     {
+
+        Rectangle area = super.getArea();
+
         if(estaHerido())
         {
-            caminando = false;
-            tiempoAnimacion = 0f;
+            batch.draw(texturaMareado, area.x, area.y, ANCHO, ALTO);
 
-            Rectangle area = super.getArea();
-
-            batch.draw(
-                quieto,
-                area.x,
-                area.y + MathUtils.random(-5, 5),
-                ANCHO,
-                ALTO
-            );
+            actualizarEstadoHerido();
 
             return;
         }
@@ -149,8 +147,6 @@ public class Jugador extends Tarro
             imagenActual = quieto;
         }
 
-        Rectangle area = super.getArea();
-
         batch.draw(imagenActual, area.x, area.y, ANCHO, ALTO);
     }
 
@@ -164,5 +160,6 @@ public class Jugador extends Tarro
         paso1.dispose();
         paso2.dispose();
         paso3.dispose();
+        texturaMareado.dispose();
     }
 }

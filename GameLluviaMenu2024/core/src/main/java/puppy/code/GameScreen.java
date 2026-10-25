@@ -7,6 +7,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -23,10 +24,12 @@ public class GameScreen implements Screen
     private Tarro tarro;
     private Lluvia lluvia;
     private Texture fonda;
+    private Texture barraHUD;
 
-	private int ultimoTerremotoRegistrado = 0;
-	private float tiempoMareo = 0f;
-	private float tiempoOsilacion = 0f; 
+    // Variables para controlar el mareo.
+    private int ultimoTerremotoRegistrado = 0;
+    private float tiempoMareo = 0f;
+    private float tiempoOsilacion = 0f;
 
     public GameScreen(final GameLluviaMenu game)
     {
@@ -35,43 +38,94 @@ public class GameScreen implements Screen
         this.batch = game.getBatch();
         this.font = game.getFont();
 
-        Sound hurtSound = Gdx.audio.newSound(Gdx.files.internal("hurt.ogg"));
+        Sound hurtSound = Gdx.audio.newSound(
+            Gdx.files.internal("hurt.ogg")
+        );
 
-        
-		tarro = new Jugador(
-    		new Texture(Gdx.files.internal("jugador_quieto.png")),
-    		new Texture(Gdx.files.internal("jugador_paso1.png")),
-    		new Texture(Gdx.files.internal("jugador_paso2.png")),
-    		new Texture(Gdx.files.internal("jugador_paso3.png")),
-    		hurtSound);
+        // Crear al jugador con sus animaciones.
+        tarro = new Jugador(
+            new Texture(Gdx.files.internal("jugador_quieto.png")),
+            new Texture(Gdx.files.internal("jugador_paso1.png")),
+            new Texture(Gdx.files.internal("jugador_paso2.png")),
+            new Texture(Gdx.files.internal("jugador_paso3.png")),
+            hurtSound
+        );
 
+        // Cargar los alimentos y terremotos.
+        Texture empanada = new Texture(
+            Gdx.files.internal("Empanada.png")
+        );
 
-        Texture empanada = new Texture(Gdx.files.internal("Empanada.png"));
+        Texture anticucho = new Texture(
+            Gdx.files.internal("Anticucho.png")
+        );
 
-        Texture anticucho = new Texture(Gdx.files.internal("Anticucho.png"));
+        Texture terremoto = new Texture(
+            Gdx.files.internal("Terremoto.png")
+        );
 
-        Texture terremoto = new Texture(Gdx.files.internal("Terremoto.png"));
+        // Fondo de la fonda.
+        fonda = new Texture(
+            Gdx.files.internal("Fonda.png")
+        );
 
-        // NUEVO: cargar el fondo en el atributo de la clase
-        fonda = new Texture(Gdx.files.internal("Fonda.png"));
+        // Crear la barra oscura del HUD.
+        Pixmap pixmapHUD = new Pixmap(
+            1, 1, Pixmap.Format.RGBA8888
+        );
 
-        empanada.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+        pixmapHUD.setColor(0.03f, 0.05f, 0.12f, 0.85f);
+        pixmapHUD.fill();
 
-        anticucho.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+        barraHUD = new Texture(pixmapHUD);
 
-        terremoto.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+        pixmapHUD.dispose();
 
-        Sound comerSound = Gdx.audio.newSound(Gdx.files.internal("comer.wav"));
+        // Mantener el estilo pixel art.
+        empanada.setFilter(
+            Texture.TextureFilter.Nearest,
+            Texture.TextureFilter.Nearest
+        );
 
-		Sound beberSound = Gdx.audio.newSound(Gdx.files.internal("beber.wav"));
+        anticucho.setFilter(
+            Texture.TextureFilter.Nearest,
+            Texture.TextureFilter.Nearest
+        );
 
-        Music musica = Gdx.audio.newMusic(Gdx.files.internal("cueca_fondo.ogg"));
+        terremoto.setFilter(
+            Texture.TextureFilter.Nearest,
+            Texture.TextureFilter.Nearest
+        );
 
-        lluvia = new Lluvia(empanada, anticucho, terremoto, comerSound, beberSound, musica);
+        // Cargar los efectos de sonido.
+        Sound comerSound = Gdx.audio.newSound(
+            Gdx.files.internal("comer.wav")
+        );
 
+        Sound beberSound = Gdx.audio.newSound(
+            Gdx.files.internal("beber.wav")
+        );
+
+        // Musica dieciochera.
+        Music musica = Gdx.audio.newMusic(
+            Gdx.files.internal("cueca_fondo.ogg")
+        );
+
+        // Crear la lluvia de objetos.
+        lluvia = new Lluvia(
+            empanada,
+            anticucho,
+            terremoto,
+            comerSound,
+            beberSound,
+            musica
+        );
+
+        // Configurar la camara.
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
 
+        // Iniciar la partida.
         tarro.crear();
         lluvia.crear();
     }
@@ -79,23 +133,31 @@ public class GameScreen implements Screen
     @Override
     public void render(float delta)
     {
-        // Detectar ESC para pausar el juego
+        // =====================================
+        // PAUSAR CON ESC
+        // =====================================
+
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE))
         {
             lluvia.pausar();
+
             game.setScreen(new PausaScreen(game, this));
+
             return;
         }
 
         ScreenUtils.clear(0, 0, 0.2f, 1);
 
-        tarro.actualizarEstado(delta);
+        // =====================================
+        // ACTUALIZAR EL JUGADOR
+        // =====================================
 
         if(!tarro.estaHerido())
         {
             tarro.actualizarMovimiento();
 
-            boolean sigueJugando = lluvia.actualizarMovimiento(tarro);
+            boolean sigueJugando =
+                lluvia.actualizarMovimiento(tarro);
 
             if(!sigueJugando)
             {
@@ -110,70 +172,154 @@ public class GameScreen implements Screen
 
                 return;
             }
-		}
+        }
 
-		if(tiempoMareo > 0f)
-		{
-			tiempoMareo -= delta;
+        // =====================================
+        // TEMPORIZADOR DE MAREO
+        // =====================================
 
-			if(tiempoMareo < 0f)
-			{
-				tiempoMareo = 0f;
-			}
-		}
+        // Reducir el tiempo restante.
+        if(tiempoMareo > 0f)
+        {
+            tiempoMareo -= delta;
 
-		int terremotosActuales = tarro.getTerremotosTomados();
-
-		if(terremotosActuales > ultimoTerremotoRegistrado)
-		{
-            if (ultimoTerremotoRegistrado < 5 &&
-                terremotosActuales >= 5)
+            if(tiempoMareo < 0f)
             {
-                tiempoMareo = 10f;
-
-                Gdx.app.log("FONDA", "Mareo activado por 10 segundos");
+                tiempoMareo = 0f;
             }
+        }
 
+        // Revisar cuantos terremotos ha tomado.
+        int terremotosActuales =
+            tarro.getTerremotosTomados();
+
+        // Detectar si ha tomado uno nuevo.
+        if(terremotosActuales > ultimoTerremotoRegistrado)
+        {
             ultimoTerremotoRegistrado = terremotosActuales;
-		}
 
-		camera.position.set(400f, 240f, 0f);
+            // Desde el quinto terremoto en adelante.
+            if(terremotosActuales >= 5)
+            {
+                // Reiniciar los 60 segundos.
+                tiempoMareo = 60f;
 
-		if(tiempoMareo > 0f)
-		{
-				tiempoOsilacion += delta;
+                tiempoOsilacion = 0f;
 
-			camera.position.x += MathUtils.sin(tiempoOsilacion * 11f) * 12f;
-			camera.position.y += MathUtils.sin(tiempoOsilacion * 9f) * 8f;
+                Gdx.app.log(
+                    "FONDA",
+                    "Mareo activado por 60 segundos"
+                );
+            }
+        }
 
-		}
-		else
-		{
-			tiempoOsilacion = 0f; 
-		}
+        // =====================================
+        // MOVIMIENTO DE CAMARA POR MAREO
+        // =====================================
 
-		camera.update();
+        // Restaurar la posicion normal.
+        camera.position.set(400f, 240f, 0f);
 
-		batch.setProjectionMatrix(camera.combined);
+        if(tiempoMareo > 0f)
+        {
+            tiempoOsilacion += delta;
+
+            // Oscilacion horizontal mas intensa.
+            camera.position.x +=
+                MathUtils.sin(tiempoOsilacion * 11f) * 12f;
+
+            // Oscilacion vertical.
+            camera.position.y +=
+                MathUtils.sin(tiempoOsilacion * 9f) * 8f;
+        }
+        else
+        {
+            tiempoOsilacion = 0f;
+        }
+
+        camera.update();
+
+        batch.setProjectionMatrix(camera.combined);
+
+        // =====================================
+        // DIBUJAR EL JUEGO
+        // =====================================
 
         batch.begin();
 
-        // NUEVO: dibujar el fondo antes de los demás elementos
-        batch.draw(fonda, -8, -8, 816, 496);
+        // Fondo ampliado para cubrir el movimiento.
+        batch.draw(fonda, -16, -12, 832, 504);
 
-        // Puntaje del usuario
-        font.draw(batch, "Puntos: " + tarro.getPuntos(), 5, 475);
-
-        // Mostrar vidas restantes.
-        font.draw(batch, " Vidas: " + tarro.getVidas(), 670, 475);
-
-        // Mostrar puntuacion maxima.
-        font.draw(batch, "HighScore: " + game.getHigherScore(), camera.viewportWidth / 2 - 50, 475);
-
+        // Dibujar al huaso.
         tarro.dibujar(batch);
 
         // Dibujar empanadas, anticuchos y terremotos.
         lluvia.actualizarDibujoLluvia(batch);
+
+        // =====================================
+        // HUD - BARRA SUPERIOR
+        // =====================================
+
+        // Barra oscura semitransparente.
+        batch.draw(barraHUD, 0, 395, 800, 85);
+
+        // Puntaje del jugador.
+        font.draw(
+            batch,
+            "Puntos: " + tarro.getPuntos(),
+            15,
+            465
+        );
+
+        // Record.
+        font.draw(
+            batch,
+            "HighScore: " + game.getHigherScore(),
+            280,
+            465
+        );
+
+        // Vidas restantes.
+        font.draw(
+            batch,
+            "Vidas: " + tarro.getVidas(),
+            630,
+            465
+        );
+
+        // =====================================
+        // CONTADOR DE TERREMOTOS
+        // =====================================
+
+        font.draw(
+            batch,
+            "Terremotos: " + tarro.getTerremotosTomados(),
+            15,
+            415
+        );
+
+        // =====================================
+        // TEMPORIZADOR VISIBLE DEL MAREO
+        // =====================================
+
+        if(tiempoMareo > 0f)
+        {
+            font.draw(
+                batch,
+                "MAREO: " + MathUtils.ceil(tiempoMareo) + " s",
+                300,
+                415
+            );
+        }
+        else
+        {
+            font.draw(
+                batch,
+                "Estado: NORMAL",
+                300,
+                415
+            );
+        }
 
         batch.end();
     }
@@ -211,7 +357,8 @@ public class GameScreen implements Screen
         tarro.destruir();
         lluvia.destruir();
 
-        // NUEVO: liberar la textura del fondo
+        // Liberar recursos graficos.
         fonda.dispose();
+        barraHUD.dispose();
     }
 }
