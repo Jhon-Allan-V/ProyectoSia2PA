@@ -16,6 +16,6 @@ public class Terremoto extends ObjetoCaida
     public void aplicarEfecto(Tarro tarro)
     {
         // El jugador pierde una vida.
-        tarro.dañar();
+        tarro.beberTerremoto();
     }
 }

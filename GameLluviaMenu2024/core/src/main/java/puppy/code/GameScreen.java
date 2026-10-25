@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.math.MathUtils;
 
 public class GameScreen implements Screen
 {
@@ -22,6 +23,10 @@ public class GameScreen implements Screen
     private Lluvia lluvia;
     private Texture fonda;
 
+	private int ultimoTerremotoRegistrado = 0;
+	private float tiempoMareo = 0f;
+	private float tiempoOsilacion = 0f; 
+
     public GameScreen(final GameLluviaMenu game)
     {
         this.game = game;
@@ -31,7 +36,14 @@ public class GameScreen implements Screen
 
         Sound hurtSound = Gdx.audio.newSound(Gdx.files.internal("hurt.ogg"));
 
-        tarro = new Jugador(new Texture(Gdx.files.internal("jugador_quieto.png")), hurtSound);
+        
+		tarro = new Jugador(
+    		new Texture(Gdx.files.internal("jugador_quieto.png")),
+    		new Texture(Gdx.files.internal("jugador_paso1.png")),
+    		new Texture(Gdx.files.internal("jugador_paso2.png")),
+    		new Texture(Gdx.files.internal("jugador_paso3.png")),
+    		hurtSound);
+
 
         Texture empanada = new Texture(Gdx.files.internal("Empanada.png"));
 
@@ -68,10 +80,6 @@ public class GameScreen implements Screen
     {
         ScreenUtils.clear(0, 0, 0.2f, 1);
 
-        camera.update();
-
-        batch.setProjectionMatrix(camera.combined);
-
         if(!tarro.estaHerido())
         {
             tarro.actualizarMovimiento();
@@ -91,12 +99,55 @@ public class GameScreen implements Screen
 
                 return;
             }
-        }
+		}
+
+		if(tiempoMareo > 0f)
+		{
+			tiempoMareo -= delta;
+
+			if(tiempoMareo < 0f)
+			{
+				tiempoMareo = 0f;
+			}
+		}
+
+		int terremotosActuales = tarro.getTerremotosTomados();
+
+		if(terremotosActuales > ultimoTerremotoRegistrado)
+		{
+			ultimoTerremotoRegistrado = terremotosActuales;
+
+			if(terremotosActuales >= 5 )
+			{
+				tiempoMareo = 60f;
+
+				Gdx.app.log("FONDA", "Mareo activado : 60 segundos");
+			}
+		}
+
+		camera.position.set(400f, 240f, 0f);
+
+		if(tiempoMareo > 0f)
+		{
+				tiempoOsilacion += delta;
+
+			camera.position.x += MathUtils.sin(tiempoOsilacion * 11f) * 12f;
+			camera.position.y += MathUtils.sin(tiempoOsilacion * 9f) * 8f;
+
+		}
+		else
+		{
+			tiempoOsilacion = 0f; 
+		}
+
+		camera.update();
+
+		batch.setProjectionMatrix(camera.combined);
 
         batch.begin();
 
         // NUEVO: dibujar el fondo antes de los demás elementos
-        batch.draw(fonda, 0, 0, 800, 480);
+        batch.draw(fonda, -8, -8, 816, 496);
 
         // Puntaje del usuario
         font.draw(batch, "Puntos: " + tarro.getPuntos(), 5, 475);

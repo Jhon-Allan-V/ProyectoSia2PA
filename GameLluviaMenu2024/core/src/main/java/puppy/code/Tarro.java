@@ -13,8 +13,9 @@ public class Tarro {
 	   private Rectangle bucket;
 	   private Texture bucketImage;
 	   private Sound sonidoHerido;
-	   private int vidas = 3;
+	   private int vidas = 10;
 	   private int puntos = 0;
+	   private int terremotosTomados = 0;
 	   private int velx = 400;
 	   private boolean herido = false;
 	   private int tiempoHeridoMax=50;
@@ -38,6 +39,20 @@ public class Tarro {
 		}
 		public void sumarPuntos(int pp) {
 			puntos+=pp;
+		}
+
+		public int getTerremotosTomados()
+		{
+			return terremotosTomados;
+		}
+
+		public void beberTerremoto()
+		{
+			terremotosTomados++;
+
+			dañar();
+
+			Gdx.app.log("FONDA", "Terremotos tomados: " + terremotosTomados);
 		}
 		
 	
