@@ -176,7 +176,7 @@ public class GameScreen implements Screen
                 game.setHigherScore(tarro.getPuntos());
             }
 
-            game.setScreen(new GameOverScreen(game));
+            game.setScreen(new GameOverScreen(game, tarro.getPuntos()));
 
             dispose();
 
@@ -211,13 +211,13 @@ public class GameScreen implements Screen
             if(terremotosActuales >= 5)
             {
                 // Reiniciar los 60 segundos.
-                tiempoMareo = 60f;
+                tiempoMareo = 30f;
 
                 tiempoOsilacion = 0f;
 
                 Gdx.app.log(
                     "FONDA",
-                    "Mareo activado por 60 segundos"
+                    "Mareo activado por 30 segundos"
                 );
             }
         }
