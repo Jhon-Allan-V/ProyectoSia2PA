@@ -1,4 +1,5 @@
 package puppy.code;
+
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -88,6 +89,8 @@ public class GameScreen implements Screen
 
         ScreenUtils.clear(0, 0, 0.2f, 1);
 
+        tarro.actualizarEstado(delta);
+
         if(!tarro.estaHerido())
         {
             tarro.actualizarMovimiento();
@@ -123,14 +126,15 @@ public class GameScreen implements Screen
 
 		if(terremotosActuales > ultimoTerremotoRegistrado)
 		{
-			ultimoTerremotoRegistrado = terremotosActuales;
+            if (ultimoTerremotoRegistrado < 5 &&
+                terremotosActuales >= 5)
+            {
+                tiempoMareo = 10f;
 
-			if(terremotosActuales >= 5 )
-			{
-				tiempoMareo = 60f;
+                Gdx.app.log("FONDA", "Mareo activado por 10 segundos");
+            }
 
-				Gdx.app.log("FONDA", "Mareo activado : 60 segundos");
-			}
+            ultimoTerremotoRegistrado = terremotosActuales;
 		}
 
 		camera.position.set(400f, 240f, 0f);
@@ -194,8 +198,6 @@ public class GameScreen implements Screen
     public void pause()
     {
         lluvia.pausar();
-
-        game.setScreen(new PausaScreen(game, this));
     }
 
     @Override
