@@ -38,6 +38,8 @@ public class Jugador extends Tarro
     private boolean caminando = false; 
     private boolean mirandoDerecha = true;
 
+    private Rectangle areaColision = new Rectangle();
+
     private static float ANCHO = 128;
     private static float ALTO = 160;
 
@@ -71,13 +73,28 @@ public class Jugador extends Tarro
     }
 
     @Override 
+    public Rectangle getArea()
+    {
+        Rectangle posicion = super.getArea();
+
+        areaColision.set(posicion.x + 28, posicion.y + 10, 72, 110);
+
+        return areaColision;
+    }
+
+    @Override 
     public void actualizarMovimiento()
     {
-        float xAnterior = getArea().x;
+        float xAnterior = super.getArea().x;
 
         super.actualizarMovimiento();
 
-        float diferencia = getArea().x - xAnterior;
+        if (super.getArea().x > 800 - ANCHO)
+        {
+            super.getArea().x = 800 - ANCHO;
+        }
+
+        float diferencia = super.getArea().x - xAnterior;
 
         caminando = Math.abs(diferencia) > 0.001f;
 
@@ -119,7 +136,7 @@ public class Jugador extends Tarro
             imagenActual = quieto;
         }
 
-        Rectangle area = getArea();
+        Rectangle area = super.getArea();
 
         batch.draw(imagenActual, area.x, area.y, ANCHO, ALTO);
     }
