@@ -152,26 +152,35 @@ public class GameScreen implements Screen
         // ACTUALIZAR EL JUGADOR
         // =====================================
 
+        
+        /*
+        * El jugador no puede moverse mientras
+        * esta reaccionando al terremoto.
+        */
         if(!tarro.estaHerido())
         {
             tarro.actualizarMovimiento();
+        }
 
-            boolean sigueJugando =
-                lluvia.actualizarMovimiento(tarro);
+        /*
+        * Los objetos siguen cayendo aunque
+        * el jugador este mareado.
+        */
+        boolean sigueJugando = lluvia.actualizarMovimiento(tarro);
 
-            if(!sigueJugando)
+        // Comprobar si se termino la partida.
+        if(!sigueJugando)
+        {
+            if(game.getHigherScore() < tarro.getPuntos())
             {
-                if(game.getHigherScore() < tarro.getPuntos())
-                {
-                    game.setHigherScore(tarro.getPuntos());
-                }
-
-                game.setScreen(new GameOverScreen(game));
-
-                dispose();
-
-                return;
+                game.setHigherScore(tarro.getPuntos());
             }
+
+            game.setScreen(new GameOverScreen(game));
+
+            dispose();
+
+            return;
         }
 
         // =====================================

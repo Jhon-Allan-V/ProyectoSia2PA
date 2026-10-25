@@ -99,7 +99,7 @@ public class Lluvia
 
 			// Colision de jugador validacion
 
-			if(objeto.colisiona(tarro.getArea()))
+			if(!tarro.estaHerido() && objeto.colisiona(tarro.getArea()))
 			{
 				/* 
 				
