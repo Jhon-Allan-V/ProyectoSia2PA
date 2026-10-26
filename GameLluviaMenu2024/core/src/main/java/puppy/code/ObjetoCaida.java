@@ -3,18 +3,16 @@ package puppy.code;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-
 import com.badlogic.gdx.math.Rectangle;
 
-/* 
-
-Gm-4 Una clase abstracta que va a representar cualquier objeto
-en caida durante la partida.
-
-Por ejemplo los objetos Empanada, Anticucho y Terremoto heredaran
-esta parte.
-
-*/
+/**
+ * GM-4: Clase abstracta de objetos en caida.
+ *
+ * GM-5: Encapsulamiento de atributos
+ * y copia defensiva del rectangulo.
+ *
+ * GM-8: Patron Template Method.
+ */
 
 public abstract class ObjetoCaida 
 {
@@ -54,9 +52,49 @@ public abstract class ObjetoCaida
         return new Rectangle(area);
     }
 
-    /* 
-    Metodo abstracto el cual cada comida puede implementar su efecto
-    */
+    /**
+     * GM-8 Template Method
+     * 
+     * Define el procedimiento comun que
+     * siguen todos los objetos al colisionar.
+     *
+     * Es final para que las clases hijas
+     * no puedan cambiar el orden de pasos.
+     *
+     * Retorna true si se aplico el efecto.
+     */
+
+     public final boolean procesarColision(Tarro tarro)
+    {
+        // PASO 1:
+        // Verificar que el jugador exista
+        // tenga vidas y no este herido
+        if (tarro == null || tarro.getVidas() <= 0 || tarro.estaHerido())
+        {
+            return false;
+        }
+
+        // PASO 2:
+        // Verificar que exista una colision
+        if (!colisiona(tarro.getArea()))
+        {
+            return false;
+        }
+
+        // PASO 3:
+        // Cada clase hija aplica su efecto
+        aplicarEfecto(tarro);
+
+        // La colision fue procesada.
+        return true;
+    }
+
+     /**
+     * Metodo abstracto utilizado por
+     * el Template Method.
+     *
+     * Cada objeto define su propio efecto.
+     */
 
     public abstract void aplicarEfecto(Tarro tarro); 
 }

@@ -110,22 +110,16 @@ public class Lluvia
 				continue; 
 			}
 
-			// Colision de jugador validacion
+			/**
+			 * GM-8 UTILIZACION DE TEMPLATE METHOD
+			 * 
+			 * ObjetoCaida verifica las condiciones
+			 * detecta la colision y aplica su efecto
+			 */
 
-			if(!tarro.estaHerido() && objeto.colisiona(tarro.getArea()))
+			if(objeto.procesarColision(tarro))
 			{
-				/* 
-				
-				Tiene polimorfismo ya que cada clase
-				tiene su propio efecto sobre el jugador
-				
-				*/
-				
-				objeto.aplicarEfecto(tarro);
-
-				// Los objetos recolectables
-				// reproducen un sonido
-				if(objeto instanceof Recolectable)
+				if (objeto instanceof Recolectable)
 				{
 					comerSound.play(0.7f);
 				}
@@ -134,16 +128,18 @@ public class Lluvia
 					beberSound.play(0.7f);
 				}
 
+				// Eliminar el objeto recogido.
 				objetos.removeIndex(i);
 
-				if(tarro.getVidas() <= 0)
+				// Comprobar si termino la partida.
+				if (tarro.getVidas() <= 0)
 				{
-					return false; 
+					return false;
 				}
 			}
-	   }
+		}
 
-	   return true; 
+		return true; 
 	    
     }  
    
