@@ -37,8 +37,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 			return higherScore;
 		}
 
-		public void setHigherScore(int higherScore) {
-			this.higherScore = higherScore;
+		public void setHigherScore(int nuevoPuntaje) 
+		{
+			// El record solo se actualiza si el puntaje supera el anterior
+			 if (nuevoPuntaje > higherScore)
+			{
+				higherScore = nuevoPuntaje;
+			}
 		}
 		
 

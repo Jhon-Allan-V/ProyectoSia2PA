@@ -23,6 +23,11 @@ public class GameScreen implements Screen
 
     private Tarro tarro;
     private Lluvia lluvia;
+
+    // GM-7: Estrategias disponibles.
+    private final EstrategiaMovimiento movimientoNormal = new MovimientoNormal();
+    private final EstrategiaMovimiento movimientoMareado = new MovimientoMareado();
+
     private Texture fonda;
     private Texture barraHUD;
 
@@ -157,6 +162,16 @@ public class GameScreen implements Screen
         * El jugador no puede moverse mientras
         * esta reaccionando al terremoto.
         */
+
+        if (tiempoMareo > 0f)
+        {
+            tarro.setEstrategiaMovimiento(movimientoMareado);
+        }
+        else
+        {
+            tarro.setEstrategiaMovimiento(movimientoNormal);
+        }
+        
         if(!tarro.estaHerido())
         {
             tarro.actualizarMovimiento();
@@ -210,7 +225,7 @@ public class GameScreen implements Screen
             // Desde el quinto terremoto en adelante.
             if(terremotosActuales >= 5)
             {
-                // Reiniciar los 60 segundos.
+                // Reiniciar los 30 segundos.
                 tiempoMareo = 30f;
 
                 tiempoOsilacion = 0f;

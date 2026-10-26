@@ -41,8 +41,8 @@ public class Jugador extends Tarro
 
     private Rectangle areaColision = new Rectangle();
 
-    private static float ANCHO = 128;
-    private static float ALTO = 160;
+    private static final float ANCHO = 128f;
+    private static final float ALTO = 160f;
 
 
     public Jugador(Texture textura, Texture paso1, Texture paso2, Texture paso3, Sound hurtSound)
@@ -84,7 +84,7 @@ public class Jugador extends Tarro
 
         areaColision.set(posicion.x + 28, posicion.y + 10, 72, 110);
 
-        return areaColision;
+        return new Rectangle(areaColision);
     }
 
     @Override 
@@ -94,10 +94,7 @@ public class Jugador extends Tarro
 
         super.actualizarMovimiento();
 
-        if (super.getArea().x > 800 - ANCHO)
-        {
-            super.getArea().x = 800 - ANCHO;
-        }
+        limitarPosicionDerecha(800 - ANCHO);
 
         float diferencia = super.getArea().x - xAnterior;
 

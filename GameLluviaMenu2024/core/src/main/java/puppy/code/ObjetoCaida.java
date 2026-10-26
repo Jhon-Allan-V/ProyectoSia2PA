@@ -3,6 +3,7 @@ package puppy.code;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
 import com.badlogic.gdx.math.Rectangle;
 
 /* 
@@ -17,9 +18,9 @@ esta parte.
 
 public abstract class ObjetoCaida 
 {
-    private Rectangle area; 
-    private Texture texture;
-    private float velocidad; 
+    private final Rectangle area; 
+    private final Texture texture;
+    private final float velocidad; 
 
     public ObjetoCaida(float x, float y, Texture texture, float velocidad)
     {
@@ -50,7 +51,7 @@ public abstract class ObjetoCaida
 
     public Rectangle getArea()
     {
-        return area;
+        return new Rectangle(area);
     }
 
     /* 
