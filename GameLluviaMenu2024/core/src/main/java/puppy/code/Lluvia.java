@@ -39,18 +39,31 @@ public class Lluvia
 	{
 		objetos = new Array<ObjetoCaida>();
 	     
-		crearObjeto();
+		crearObjeto(0);
 
 	    musica.setLooping(true);
 		musica.setVolume(0.35f);
 		musica.play();
 	}
 	
-	private void crearObjeto() 
+	private void crearObjeto(int puntos) 
 	{
 		float x = MathUtils.random(0, 800 - 64);
 		float y = 480;
-		float velocidad = 300;
+		float velocidad = 200f;
+
+		if(puntos >= 2000)
+		{
+			velocidad = 440f;
+		}
+		else if(puntos >= 1000)
+		{
+			velocidad = 350f;
+		}
+		else if(puntos >= 500)
+		{
+			velocidad = 270f;
+		}
 
 		int tipo = MathUtils.random(1, 3);
 
@@ -79,7 +92,7 @@ public class Lluvia
 	   // generar gotas de lluvia 
 	   if(TimeUtils.nanoTime() - lastDropTime > 100000000)
 	   {
-			crearObjeto();
+			crearObjeto(tarro.getPuntos());
 	   } 
 
 	   for(int i = objetos.size - 1; i >= 0; i--)
