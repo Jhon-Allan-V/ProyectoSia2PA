@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 		private SpriteBatch batch;
 		private BitmapFont font;
-		private int higherScore;
 
 		public void create() {
 			batch = new SpriteBatch();
@@ -25,25 +24,27 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 			font.dispose();
 		}
 
-		public SpriteBatch getBatch() {
+		public SpriteBatch getBatch() 
+		{
 			return batch;
 		}
 
-		public BitmapFont getFont() {
+		public BitmapFont getFont() 
+		{
 			return font;
 		}
 
-		public int getHigherScore() {
-			return higherScore;
+		public int getHigherScore() 
+		{
+			
+			// GM-6: Consultar el record mediante Singleton.
+    		return GestorRecord.getInstancia().getRecord();
 		}
 
 		public void setHigherScore(int nuevoPuntaje) 
 		{
-			// El record solo se actualiza si el puntaje supera el anterior
-			 if (nuevoPuntaje > higherScore)
-			{
-				higherScore = nuevoPuntaje;
-			}
+			// GM-6: Actualizar el record en la instancia unica.
+    		GestorRecord.getInstancia().actualizarRecord(nuevoPuntaje);
 		}
 		
 
