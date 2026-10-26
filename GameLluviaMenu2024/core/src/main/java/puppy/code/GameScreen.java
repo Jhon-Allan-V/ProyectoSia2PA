@@ -23,6 +23,8 @@ public class GameScreen implements Screen
 
     private Tarro tarro;
     private Lluvia lluvia;
+    // GM-9: Configuracion creada mediante Builder
+    private final ConfiguracionPartida configuracion;
 
     // GM-7: Estrategias disponibles.
     private final EstrategiaMovimiento movimientoNormal = new MovimientoNormal();
@@ -39,6 +41,13 @@ public class GameScreen implements Screen
     public GameScreen(final GameLluviaMenu game)
     {
         this.game = game;
+
+        // GM-9 : Patron Builder Que construye la configuracion de la partida
+        configuracion = new ConfiguracionPartida.Builder()
+        .vidasIniciales(10)
+        .duracionMareo(30f)
+        .velocidadInicialCaida(200f)
+        .build();
 
         this.batch = game.getBatch();
         this.font = game.getFont();
@@ -123,15 +132,18 @@ public class GameScreen implements Screen
             terremoto,
             comerSound,
             beberSound,
-            musica
+            musica,
+            configuracion
         );
 
         // Configurar la camara.
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
 
-        // Iniciar la partida.
-        tarro.crear();
+        // GM-9: Crear al jugador con las vidas configuradas.
+        tarro.crear(configuracion.getVidasIniciales());
+
+        // Iniciar la lluvia con la configuracion recibida.
         lluvia.crear();
     }
 
@@ -171,7 +183,7 @@ public class GameScreen implements Screen
         {
             tarro.setEstrategiaMovimiento(movimientoNormal);
         }
-        
+
         if(!tarro.estaHerido())
         {
             tarro.actualizarMovimiento();
@@ -226,7 +238,7 @@ public class GameScreen implements Screen
             if(terremotosActuales >= 5)
             {
                 // Reiniciar los 30 segundos.
-                tiempoMareo = 30f;
+                tiempoMareo = configuracion.getDuracionMareo();
 
                 tiempoOsilacion = 0f;
 

@@ -91,15 +91,39 @@ public class Tarro {
 		Gdx.app.log("FONDA", "Terremotos tomados: " + terremotosTomados);
 	}
 		
+	/**
+	 * Inicializacion predeterminada.
+	 */
 	
-	public void crear() 
+	public void crear()
 	{
-		    bucket = new Rectangle();
-		    bucket.x = 800 / 2 - 64 / 2;
-		    bucket.y = 20;
-		    bucket.width = 64;
-		    bucket.height = 64;
+		crear(10);
 	}
+
+	/**
+	 * GM-9: Permite configurar las vidas iniciales.
+	 *
+	 * El valor se recibe desde ConfiguracionPartida.
+	 */
+
+	public void crear(int vidasIniciales)
+	{
+		if (vidasIniciales <= 0)
+		{
+			throw new IllegalArgumentException("Las vidas iniciales deben ser mayores que cero");
+		}
+
+		this.vidas = vidasIniciales;
+
+		// Crear el rectangulo del jugador.
+		bucket = new Rectangle();
+
+		bucket.x = 800 / 2 - 64 / 2;
+		bucket.y = 20;
+		bucket.width = 64;
+		bucket.height = 64;
+	}
+
 	public void dañar() 
 	{
 		// Evitar descontar vidas si ya se llego a cero

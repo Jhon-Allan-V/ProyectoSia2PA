@@ -23,8 +23,11 @@ public class Lluvia
 	private Sound comerSound;
 	private Sound beberSound;
 	private Music musica;
+
+	// GM-9: Configuracion construida mediante Builder.
+	private final ConfiguracionPartida configuracion;
 	   
-	public Lluvia(Texture texturaEmpanada, Texture texturaAnticucho, Texture texturaTerremoto, Sound comerSound, Sound beberSound, Music mm) 
+	public Lluvia(Texture texturaEmpanada, Texture texturaAnticucho, Texture texturaTerremoto, Sound comerSound, Sound beberSound, Music mm, ConfiguracionPartida configuracion) 
 	{
 		this.texturaEmpanada = texturaEmpanada;
 		this.texturaAnticucho = texturaAnticucho;
@@ -33,6 +36,9 @@ public class Lluvia
 		this.comerSound = comerSound;
     	this.beberSound = beberSound;
     	this.musica = mm;
+
+		 // GM-9: Guardar la configuracion de la partida.
+    	this.configuracion = configuracion;
 	}
 	
 	public void crear() 
@@ -50,11 +56,11 @@ public class Lluvia
 	{
 		float x = MathUtils.random(0, 800 - 64);
 		float y = 480;
-		float velocidad = 200f;
+		float velocidad = configuracion.getVelocidadInicialCaida();
 
 		if(puntos >= 2000)
 		{
-			velocidad = 440f;
+			velocidad = 400f;
 		}
 		else if(puntos >= 1000)
 		{
